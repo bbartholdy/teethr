@@ -1,0 +1,12 @@
+^teethr\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+_dev\.R
+tests/
+vignettes/
+^data-raw$
+^\.github$
