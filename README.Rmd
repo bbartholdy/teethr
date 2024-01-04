@@ -5,6 +5,9 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
+library(teethr)
+library(dplyr)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -37,7 +40,7 @@ First, dental data are combined with demographic data and converted to long form
 `dental_longer()`. `dental_longer()` also adds information on tooth type and
 position that can be used to calculate tooth- and position-specific indices.
 
-```{r example}
+```{r example, eval=FALSE}
 library(teethr)
 library(dplyr)
 
@@ -46,6 +49,14 @@ mb11_calculus_long <- mb11_calculus %>%
   inner_join(mb11_demography, by = "id") # combine with age and sex
 mb11_calculus_long
 ```
+
+```{r example-out, echo=FALSE}
+mb11_calculus_long <- mb11_calculus %>% 
+  dental_longer(-id, rm_char = "t", names_sep = "_") %>% # make longer all columns except 'id'
+  inner_join(mb11_demography, by = "id") # combine with age and sex
+mb11_calculus_long
+```
+
 
 The long-format data can be used to calculate indices, such as the dental calculus
 index using the `calculus_index()` function. The function also provides the number
@@ -98,7 +109,7 @@ mb11_caries_long <- mb11_caries %>%
 
 mb11_caries_long %>% 
   group_by(type) %>% 
-  caries_ratio(.no_lesion = "none", .lesion_sep = ";")
+  caries_ratio(.id_cols = id, .no_lesion = "none", .lesion_sep = ";")
 ```
 
 

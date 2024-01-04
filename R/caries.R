@@ -38,11 +38,25 @@
 #' @export
 
 caries_ratio <- function(.data, .id_cols, ..., .caries = score, .no_lesion = NULL, .lesion_sep = NULL, .method = c("location", "standards", "count")){
+  # save potential groupings for later
+  prev_groups <- group_vars(.data)
   if(!is.null(.no_lesion) & !is.null(.lesion_sep)){
-    .data %>%
-      caries_reduce(id_cols = {{ .id_cols }}, caries = {{ .caries }}, no_lesion = .no_lesion, lesion_sep = .lesion_sep, method = .method) %>%
-      dplyr::group_by(..., .add = T) %>%
-      dental_ratio(count = caries_count)
+    reduced <- caries_reduce(
+      .data,
+      id_cols = {{ .id_cols }},
+      caries = {{ .caries }},
+      no_lesion = .no_lesion,
+      lesion_sep = .lesion_sep,
+      method = .method
+    )
+      regroup <- grouped_df(reduced, prev_groups)
+      regroup %>%
+        dplyr::group_by(..., .add = T) %>%
+        dental_ratio(count = caries_count)
+    # .data %>%
+    #   caries_reduce(id_cols = {{ .id_cols }}, caries = {{ .caries }}, no_lesion = .no_lesion, lesion_sep = .lesion_sep, method = .method) %>%
+    #   dplyr::group_by(..., .add = T) %>%
+    #   dental_ratio(count = caries_count)
   } else {
     .data %>%
       # {if(!is.null(.no_lesions) & !is.null(.lesion_sep))
@@ -79,11 +93,19 @@ caries_reduce <- function(data, id_cols, caries = score, no_lesion = NULL, lesio
         {{ caries }} == no_lesion, 0L, 1L, missing = NA # convert lesion location to binary (present = 1; absent = 0)
       )
     )
-    out <- dplyr::distinct(dplyr::mutate(
-      out_bin,
-      caries_count = sum(caries_count),
-      .by = c(id, tooth)
-    ), id, tooth, .keep_all = T)
+    out <- out_bin %>%
+      ungroup() %>%
+      dplyr::mutate(
+        caries_count = sum(caries_count),
+        .by = c({{ id_cols }}, tooth)
+      ) %>%
+      dplyr::distinct(
+        {{ id_cols }}, tooth, .keep_all = T
+      )
+    #   dplyr::distinct(dplyr::mutate(
+    #   caries_count = sum(caries_count),
+    #   .by = c({{ .id_cols }}, tooth)
+    # ), id, tooth, .keep_all = T)
   } else if(method == "count"){
     out <- data
   }
