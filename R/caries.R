@@ -16,6 +16,7 @@
 #' number of lesions on each tooth/surface.
 #'
 #' @param .data Data frame in long format, with one tooth per row, and a column with the caries count for each tooth.
+#' @param .id_cols Columns used for the individual ID.
 #' @param .caries Caries count variable. Defaults to 'count'.
 #' @param .no_lesion string used to indicate how the absence of lesions were scored.
 #' @param .lesion_sep string used to indicate how multiple lesions on a tooth/surface are separated (if applicable).
@@ -30,11 +31,11 @@
 #' # example adding groups before call to function
 #' mb11_caries_long %>%
 #'   group_by(class) %>%
-#'   caries_ratio(.no_lesion = "none", .lesion_sep = ";")
+#'   caries_ratio(.id_cols = id, .no_lesion = "none", .lesion_sep = ";")
 #'
 #' # example adding groups in call to function
 #' mb11_caries_long %>%
-#'   caries_ratio(class, .no_lesion = "none", .lesion_sep = ";")
+#'   caries_ratio(class, .id_cols = id, .no_lesion = "none", .lesion_sep = ";")
 #' @export
 
 caries_ratio <- function(.data, .id_cols, ..., .caries = score, .no_lesion = NULL, .lesion_sep = NULL, .method = c("location", "standards", "count")){
