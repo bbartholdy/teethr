@@ -40,7 +40,7 @@
 
 caries_ratio <- function(.data, .id_cols, ..., .caries = score, .no_lesion = NULL, .lesion_sep = NULL, .method = c("location", "standards", "count")){
   # save potential groupings for later
-  prev_groups <- group_vars(.data)
+  prev_groups <- dplyr::group_vars(.data)
   if(!is.null(.no_lesion) & !is.null(.lesion_sep)){
     reduced <- caries_reduce(
       .data,
@@ -50,7 +50,7 @@ caries_ratio <- function(.data, .id_cols, ..., .caries = score, .no_lesion = NUL
       lesion_sep = .lesion_sep,
       method = .method
     )
-      regroup <- grouped_df(reduced, prev_groups)
+      regroup <- dplyr::grouped_df(reduced, prev_groups)
       regroup %>%
         dplyr::group_by(..., .add = T) %>%
         dental_ratio(count = caries_count)
@@ -95,7 +95,7 @@ caries_reduce <- function(data, id_cols, caries = score, no_lesion = NULL, lesio
       )
     )
     out <- out_bin %>%
-      ungroup() %>%
+      dplyr::ungroup() %>%
       dplyr::mutate(
         caries_count = sum(caries_count),
         .by = c({{ id_cols }}, tooth)
