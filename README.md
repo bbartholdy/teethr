@@ -8,6 +8,8 @@
 [![R-CMD-check](https://github.com/bbartholdy/teethr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bbartholdy/teethr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
+⚠️ **VERY early development!** ⚠️
+
 The goal of teethr (pronounced teether) is to provide a set of tools to
 calculate dental indices, such as caries ratio, and calculus index, and
 facilitate visualisation of data related to dental diseases.
