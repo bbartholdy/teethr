@@ -2,6 +2,7 @@
 
 export("%>%")
 export(calculus_index)
+export(convert_notation)
 export(count_caries)
 export(dental_filter)
 export(dental_index)
