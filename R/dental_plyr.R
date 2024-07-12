@@ -93,7 +93,7 @@ dental_join <- function(data, by = tooth, notation = c("FDI", "standards", "text
   notation <- match.arg(notation, c("FDI", "standards", "text"))
   column_select <- c(notation, "region", "position", "side", "class", "type", "quadrant")
   tooth_notation <- tooth_notation[column_select]
-  tooth_notation <- dplyr::rename(tooth_notation, "{{by}}" := notation)
+  names(tooth_notation)[1] <- deparse(substitute(tooth)) # rename notation df to match input data for join
   if(notation == "text"){
     data %>%
       dplyr::left_join(tooth_notation, ...)
@@ -102,5 +102,4 @@ dental_join <- function(data, by = tooth, notation = c("FDI", "standards", "text
       dplyr::mutate(across({{ by }}, \(x) stringr::str_extract(x, "\\d+"))) %>%
       dplyr::left_join(tooth_notation, ...) # need to be able to use the 'by' argument here
   }
-
 }
