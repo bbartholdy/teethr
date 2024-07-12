@@ -5,30 +5,16 @@
 \title{Convert a data frame containing dental scores to long format and add tooth
 position variables.}
 \usage{
-dental_longer(
-  data,
-  cols,
-  ...,
-  notation = c("FDI", "standards1994", "text"),
-  rm_char = NULL
-)
+dental_longer(data, cols, ...)
 }
 \arguments{
-\item{data}{A data frame containing one column with a unique identifier and
-multiple columns with calculus scores from each surface of a tooth.}
+\item{data}{A data frame containing a column with a unique identifier and
+one column per tooth or tooth surface.}
 
 \item{cols}{Which columns to pivot into longer format. These should be the columns
 containing the scores for each tooth/surface.}
 
 \item{...}{additional arguments passed on to \code{\link[tidyr]{pivot_longer}}.}
-
-\item{notation}{string. Which notation convention is used to name the columns
-with dental scores. Options are "FDI", "standards1994", "text". See the
-\code{tooth_notation} object for more details.}
-
-\item{rm_char}{string. Optional argument to remove any characters from tooth
-name columns, e.g., if the FDI number was prefixed with a letter (since it's not
-great practice to have column names in a spreadsheet starting with a number).}
 }
 \value{
 Returns a longer data frame with one row per tooth or tooth surface,
@@ -55,9 +41,9 @@ separator was used, use instead \verb{names_pattern = <regex>}. See
 # pivot calculus scores per surface (all columns except id)
   # 't' prefix needs to be removed from column names
 mb11_calculus \%>\%
-  dental_longer(-id, rm_char = "t", names_sep = "_")
+  dental_longer(-id, names_sep = "_")
 
 # pivot caries scores per tooth
 mb11_caries \%>\%
-  dental_longer(-id, rm_char = "t")
+  dental_longer(-id)
 }

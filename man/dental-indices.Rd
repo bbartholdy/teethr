@@ -43,7 +43,8 @@ library(dplyr)
 library(tidyr)
 # dental calculus index
 mb11_calculus \%>\%
-  dental_longer(-id, rm_char = "t", names_sep = "_") \%>\%
+  dental_longer(-id, names_sep = "_") \%>\%
+  dental_join() \%>\%
   group_by(class) \%>\% # calculate index per tooth class
   dental_index()
 

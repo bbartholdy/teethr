@@ -17,7 +17,8 @@
 #' library(tidyr)
 #' # dental calculus index
 #' mb11_calculus %>%
-#'   dental_longer(-id, rm_char = "t", names_sep = "_") %>%
+#'   dental_longer(-id, names_sep = "_") %>%
+#'   dental_join() %>%
 #'   group_by(class) %>% # calculate index per tooth class
 #'   dental_index()
 #'
@@ -41,7 +42,7 @@ dental_index <- function(data, score = score){
   # detect if any groups have 0 observations
   if(sum(out_n$n == 0) != 0){
     out_n_old <- out_n
-    # remove rows with no teeth to avoid dividing by 0
+    # remove rows with no observations to avoid dividing by 0
     out_n <- out_n %>%
       dplyr::filter(n > 0)
     rows_removed <- nrow(out_n_old) - nrow(out_n)

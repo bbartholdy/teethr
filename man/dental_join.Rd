@@ -4,19 +4,19 @@
 \alias{dental_join}
 \title{Produce detailed tooth position information from tooth notation}
 \usage{
-dental_join(data, notation = NULL, rm_char = NULL)
+dental_join(data, by = tooth, notation = c("FDI", "standards", "text"), ...)
 }
 \arguments{
-\item{data}{A data frame containing one column with a unique identifier and
-multiple columns with calculus scores from each surface of a tooth.}
+\item{data}{A data frame containing a column with a unique identifier and
+one column per tooth or tooth surface.}
+
+\item{by}{string. name of column containing the tooth notation.}
 
 \item{notation}{string. Which notation convention is used to name the columns
-with dental scores. Options are "FDI", "standards1994", "text". See the
+with dental scores. Options are "FDI", "standards", "text". See the
 \code{tooth_notation} object for more details.}
 
-\item{rm_char}{string. Optional argument to remove any characters from tooth
-name columns, e.g., if the FDI number was prefixed with a letter (since it's not
-great practice to have column names in a spreadsheet starting with a number).}
+\item{...}{supply additional arguments to \code{left_join()}}
 }
 \value{
 Returns the original data frame along with detailed information about
@@ -26,4 +26,10 @@ position (anterior, posterior), side, class (incisor, canine, etc.), type,
 }
 \description{
 Produce detailed tooth position information from tooth notation
+}
+\examples{
+mb11_caries \%>\%
+  dental_longer(-id) \%>\%
+  dental_join()
+
 }

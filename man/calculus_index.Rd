@@ -38,7 +38,8 @@ quadrant, either in the function or using \code{\link[dplyr]{group_by}} above in
 \examples{
 library(dplyr)
 mb11_calculus_long <- mb11_calculus \%>\%
-  dental_longer(-id, rm_char = "t", names_sep = "_")
+  dental_longer(-id, names_sep = "_") \%>\%
+  dental_join()
 # example adding groups before call to function
 mb11_calculus_long \%>\%
   group_by(id, quadrant) \%>\%
