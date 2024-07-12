@@ -1,19 +1,24 @@
 mb11_calculus_long <- mb11_calculus %>%
-  dental_longer(-id, names_sep = "_", rm_char = "t")
+  dental_longer(-id, names_sep = "_")
 
 mb11_caries_long <- mb11_caries %>%
-  dental_longer(-id, rm_char = "t")
+  dental_longer(-id)
 
-test_that("Test dental_longer function", {
-  expect_error(
-    mb11_caries_long %>%
-      dental_longer(-id),
-  "Could not recognise dental notation"
-  )
+# mb11_caries_longer <- mb11_caries_long %>%
+#   tidyr::separate_longer_delim(score, ";")
+
+test_that("dental_longer works", {
   expect_equal(nrow(mb11_calculus_long), nrow(mb11_calculus) * 96)
   expect_equal(nrow(mb11_caries_long), nrow(mb11_caries) * 32)
-  expect_equal(sum(is.na(mb11_calculus_long$region)), 0)
-  expect_equal(sum(is.na(mb11_calculus_long$position)), 0)
-  expect_equal(sum(is.na(mb11_caries_long$region)), 0)
-  expect_equal(sum(is.na(mb11_caries_long$position)), 0)
+})
+
+test_that("dental_join works", {
+  calc_join <- mb11_calculus_long %>%
+    dental_join()
+  caries_join <- mb11_caries_long %>%
+    dental_join()
+  expect_equal(sum(is.na(calc_join$region)), 0)
+  expect_equal(sum(is.na(calc_join$position)), 0)
+  expect_equal(sum(is.na(caries_join$region)), 0)
+  expect_equal(sum(is.na(caries_join$position)), 0)
 })
