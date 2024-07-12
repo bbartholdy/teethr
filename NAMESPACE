@@ -2,10 +2,12 @@
 
 export("%>%")
 export(calculus_index)
-export(caries_ratio)
+export(count_caries)
 export(dental_filter)
 export(dental_index)
+export(dental_join)
 export(dental_longer)
 export(dental_ratio)
 importFrom(magrittr,"%>%")
 importFrom(rlang,.data)
+importFrom(utils,globalVariables)
