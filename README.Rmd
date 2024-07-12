@@ -45,14 +45,15 @@ library(teethr)
 library(dplyr)
 
 mb11_calculus_long <- mb11_calculus %>% 
-  dental_longer(-id, rm_char = "t", names_sep = "_") %>% # make longer all columns except 'id'
+  dental_longer(-id, names_sep = "_") %>% # make longer all columns except 'id'
+  dental_join() # add tooth information (position, type, etc.)
   inner_join(mb11_demography, by = "id") # combine with age and sex
 mb11_calculus_long
 ```
 
 ```{r example-out, echo=FALSE}
 mb11_calculus_long <- mb11_calculus %>% 
-  dental_longer(-id, rm_char = "t", names_sep = "_") %>% # make longer all columns except 'id'
+  dental_longer(-id, names_sep = "_") %>% # make longer all columns except 'id'
   inner_join(mb11_demography, by = "id") # combine with age and sex
 mb11_calculus_long
 ```
@@ -105,11 +106,13 @@ Dental caries ratios can be calculated using the `caries_ratio` function.
 
 ```{r caries-ratio}
 mb11_caries_long <- mb11_caries %>% 
-  dental_longer(-id, rm_char = "t")
+  dental_longer(-id) %>%
+  dental_join()
 
 mb11_caries_long %>% 
+  count_caries(caries = score, no_lesion = "none") %>% # convert location to lesion count
   group_by(type) %>% 
-  caries_ratio(.id_cols = id, .no_lesion = "none", .lesion_sep = ";")
+  dental_ratio(count = caries_count)
 ```
 
 

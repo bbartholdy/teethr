@@ -30,35 +30,27 @@ tooth- and position-specific indices.
 ``` r
 library(teethr)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 
 mb11_calculus_long <- mb11_calculus %>% 
-  dental_longer(-id, rm_char = "t", names_sep = "_") %>% # make longer all columns except 'id'
+  dental_longer(-id, names_sep = "_") %>% # make longer all columns except 'id'
   inner_join(mb11_demography, by = "id") # combine with age and sex
 mb11_calculus_long
-#> # A tibble: 3,936 × 12
-#>    id    tooth surface score region  position  side  class  type  quadrant age  
-#>    <chr> <chr> <chr>   <dbl> <chr>   <chr>     <chr> <chr>  <chr> <chr>    <chr>
-#>  1 MB131 11    bucc        0 maxilla anterior  right incis… i1    UA       ma   
-#>  2 MB131 11    lin         0 maxilla anterior  right incis… i1    UA       ma   
-#>  3 MB131 11    ip          1 maxilla anterior  right incis… i1    UA       ma   
-#>  4 MB131 12    bucc        0 maxilla anterior  right incis… i2    UA       ma   
-#>  5 MB131 12    lin         0 maxilla anterior  right incis… i2    UA       ma   
-#>  6 MB131 12    ip          1 maxilla anterior  right incis… i2    UA       ma   
-#>  7 MB131 13    bucc        0 maxilla anterior  right canine c     UA       ma   
-#>  8 MB131 13    lin         0 maxilla anterior  right canine c     UA       ma   
-#>  9 MB131 13    ip          0 maxilla anterior  right canine c     UA       ma   
-#> 10 MB131 14    bucc        1 maxilla posterior right premo… pm1   UP       ma   
-#> # ℹ 3,926 more rows
-#> # ℹ 1 more variable: sex <chr>
 ```
+
+    #> # A tibble: 3,936 × 6
+    #>    id    tooth surface score age   sex  
+    #>    <chr> <chr> <chr>   <dbl> <chr> <chr>
+    #>  1 MB131 t11   bucc        0 ma    m    
+    #>  2 MB131 t11   lin         0 ma    m    
+    #>  3 MB131 t11   ip          1 ma    m    
+    #>  4 MB131 t12   bucc        0 ma    m    
+    #>  5 MB131 t12   lin         0 ma    m    
+    #>  6 MB131 t12   ip          1 ma    m    
+    #>  7 MB131 t13   bucc        0 ma    m    
+    #>  8 MB131 t13   lin         0 ma    m    
+    #>  9 MB131 t13   ip          0 ma    m    
+    #> 10 MB131 t14   bucc        1 ma    m    
+    #> # ℹ 3,926 more rows
 
 The long-format data can be used to calculate indices, such as the
 dental calculus index using the `calculus_index()` function. The
@@ -69,9 +61,12 @@ done for the whole sample,
 
 ``` r
 mb11_calculus_long %>%
+  dental_join() %>%
   group_by(quadrant) %>% 
   calculus_index()
-#> previously defined groups (quadrant) were used. If that was not expected, use `ungroup()` on the data frame before using the function.
+#> Joining with `by = join_by(tooth)`
+#> previously defined groups (quadrant) were used. If that was not expected, use
+#> `ungroup()` on the data frame before using the function.
 #> # A tibble: 4 × 4
 #>   quadrant     n score_sum index
 #>   <chr>    <int>     <dbl> <dbl>
@@ -85,10 +80,13 @@ or by sex,
 
 ``` r
 mb11_calculus_long %>%
+  dental_join() %>%
   # groups can also be added directly to calculus_index()
   calculus_index(sex, quadrant) %>% 
   select(sex, quadrant, index) # remove unnecessary outputs
-#> previously defined groups (sex,quadrant) were used. If that was not expected, use `ungroup()` on the data frame before using the function.
+#> Joining with `by = join_by(tooth)`
+#> previously defined groups (sex,quadrant) were used. If that was not expected,
+#> use `ungroup()` on the data frame before using the function.
 #> # A tibble: 16 × 3
 #>    sex   quadrant  index
 #>    <chr> <chr>     <dbl>
@@ -114,9 +112,12 @@ or by age and sex.
 
 ``` r
 mb11_calculus_long %>%
+  dental_join() %>%
   calculus_index(sex, age, quadrant) %>% 
   select(sex, quadrant, index) # remove unnecessary outputs
-#> previously defined groups (sex,age,quadrant) were used. If that was not expected, use `ungroup()` on the data frame before using the function.
+#> Joining with `by = join_by(tooth)`
+#> previously defined groups (sex,age,quadrant) were used. If that was not
+#> expected, use `ungroup()` on the data frame before using the function.
 #> Warning in dental_index(., score = {: 1 rows removed because of no teeth
 #> present in groupings.
 #> # A tibble: 39 × 3
@@ -138,6 +139,7 @@ mb11_calculus_long %>%
 ``` r
 library(ggplot2)
 mb11_calculus_long %>% 
+  dental_join() %>%
   calculus_index(id, age, quadrant) %>% 
   #filter(quadrant == "UP") %>% 
   ggplot(aes(x = age, y = index, fill = age)) +
@@ -146,7 +148,9 @@ mb11_calculus_long %>%
     scale_fill_viridis_d() +
     facet_wrap(~ quadrant) +
     theme_bw()
-#> previously defined groups (id,age,quadrant) were used. If that was not expected, use `ungroup()` on the data frame before using the function.
+#> Joining with `by = join_by(tooth)`
+#> previously defined groups (id,age,quadrant) were used. If that was not
+#> expected, use `ungroup()` on the data frame before using the function.
 #> Warning in dental_index(., score = {: 1 rows removed because of no teeth
 #> present in groupings.
 ```
@@ -158,23 +162,26 @@ function.
 
 ``` r
 mb11_caries_long <- mb11_caries %>% 
-  dental_longer(-id, rm_char = "t")
+  dental_longer(-id) %>%
+  dental_join()
+#> Joining with `by = join_by(tooth)`
 
 mb11_caries_long %>% 
+  count_caries(caries = score, no_lesion = "none") %>%
   group_by(type) %>% 
-  caries_ratio(.no_lesion = "none", .lesion_sep = ";")
+  dental_ratio(count = caries_count)
 #> previously defined groups (type) were used. If that was not expected, use `ungroup()` on the data frame before using the function.
 #> # A tibble: 8 × 4
 #>   type      n count  ratio
-#>   <chr> <int> <int>  <dbl>
-#> 1 c       143    17 0.119 
-#> 2 i1      125    10 0.08  
-#> 3 i2      132     9 0.0682
-#> 4 m1      120    35 0.292 
-#> 5 m2      105    37 0.352 
-#> 6 m3       90    25 0.278 
-#> 7 pm1     141    15 0.106 
-#> 8 pm2     112    19 0.170
+#>   <chr> <int> <dbl>  <dbl>
+#> 1 c       140    14 0.1   
+#> 2 i1      123     8 0.0650
+#> 3 i2      130     7 0.0538
+#> 4 m1      117    32 0.274 
+#> 5 m2      101    33 0.327 
+#> 6 m3       88    23 0.261 
+#> 7 pm1     140    14 0.1   
+#> 8 pm2     111    18 0.162
 ```
 
 The package also facilitates working with the {tidyverse}.
