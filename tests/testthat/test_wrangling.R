@@ -4,8 +4,13 @@ mb11_calculus_long <- mb11_calculus %>%
 mb11_caries_long <- mb11_caries %>%
   dental_longer(-id)
 
-# mb11_caries_longer <- mb11_caries_long %>%
-#   tidyr::separate_longer_delim(score, ";")
+test_that("notation can be converted", {
+  new_notation <- mb11_caries_long |>
+    dental_recode(col = tooth, from = "FDI", to = "standards")
+
+  expect_equal(dim(new_notation), dim(mb11_caries_long))
+  expect_in(new_notation$tooth, tooth_notation$standards)
+})
 
 test_that("dental_longer works", {
   expect_equal(nrow(mb11_calculus_long), nrow(mb11_calculus) * 96)

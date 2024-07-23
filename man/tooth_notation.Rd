@@ -10,7 +10,7 @@
 A data frame with 32 rows and 9 columns:
 \describe{
 \item{FDI}{Fédération dentaire internationale naming convention}
-\item{standards1994}{Standards naming (Buikstra and Ubelaker 1994)}
+\item{standards}{Standards naming (Buikstra and Ubelaker 1994)}
 \item{text}{Text naming: [UL][LR][ICPM][1-3] = upper/lower; left/right; incisor/canine/premolar/molar; tooth type (1-4). Example: Upper left lateral incisor = ULI2}
 \item{region}{if the tooth is from the maxilla or mandible}
 \item{position}{if the tooth is anterior or posterior}

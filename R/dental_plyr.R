@@ -60,16 +60,6 @@ dental_longer <- function(data, cols, ...){
   out
 }
 
-# recode vector based on a named vector
-recode_vector <- function(x, index){
-  out <- x
-  for(i in 1:length(x)){
-    out[i] <- index[[x[i]]]
-  }
-  return(out)
-}
-
-
 #' Produce detailed tooth position information from tooth notation
 #'
 #' @inheritParams dental_longer
@@ -102,4 +92,24 @@ dental_join <- function(data, by = tooth, notation = c("FDI", "standards", "text
       dplyr::mutate(across({{ by }}, \(x) stringr::str_extract(x, "\\d+"))) %>%
       dplyr::left_join(tooth_notation, ...) # need to be able to use the 'by' argument here
   }
+}
+
+#' Recode tooth notation
+#'
+#' Function to switch between tooth notations.
+#' @param data A data frame to convert
+#' @param col the column to convert. Must contain a tooth notation (e.g., FDI, standards).
+#' @param from string. the tooth notation of the original data.
+#' @param to string. The tooth notation you wish to convert to.
+#' @export
+dental_recode <- function(data, col, from, to){
+    data <- strip_prefix(data, {{ col }})
+    dplyr::mutate(
+      data,
+      "{{col}}" := plyr::mapvalues(
+        {{ col }}, 
+        from = tooth_notation[[from]], 
+        to = tooth_notation[[to]]
+      )
+    )
 }
