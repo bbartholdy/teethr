@@ -48,7 +48,7 @@ calculus_index <- function(.data, ..., .score = score, .method = c("simple", "gr
       dental_index(score = {{ .score }})
   } else {
   .data %>%
-    group_by(..., .add = T) %>%
+    dplyr::group_by(..., .add = T) %>%
     dental_index(score = {{ .score }}) #%>%
   }
 
@@ -68,7 +68,7 @@ dental_filter <- function(data, score = score){
   # Minimally, each surface must be scorable on at least one side of the dentition to obtain the index.
   # interpreted as: each surface (bucc, lin, ipx) must be represented at least once in a quadrant
   # add column on whether tooth is present or absent
-  data_groups <- group_vars(data)
+  data_groups <- dplyr::group_vars(data)
   exclude <- data %>%
     dplyr::mutate(
       presence = dplyr::case_when(
@@ -76,13 +76,13 @@ dental_filter <- function(data, score = score){
         TRUE ~ 1
       )
     ) %>%
-    dplyr::group_by(across(group_vars(data)), quadrant, surface, .add = F) %>%
+    dplyr::group_by(dplyr::across(dplyr::group_vars(data)), quadrant, surface, .add = F) %>%
     dplyr::summarise(n_surfaces = sum(presence)) %>%
     dplyr::filter(n_surfaces == 0) %>%
     dplyr::ungroup()
 
-  excluded_quads <- dplyr::distinct(exclude, across(group_vars(data)), quadrant)
-  excluded_ids <- dplyr::distinct(exclude, across(group_vars(data)))
+  excluded_quads <- dplyr::distinct(exclude, dplyr::across(dplyr::group_vars(data)), quadrant)
+  excluded_ids <- dplyr::distinct(exclude, dplyr::across(dplyr::group_vars(data)))
 
   if(nrow(excluded_quads) > 0 & nrow(excluded_quads < 5)) warning(sprintf("quadrant %s from id %s removed due to missing surfaces\n", excluded_quads$quadrant, excluded_quads$id))
   if(nrow(excluded_quads) > 5) warning(sprintf("%s individuals and %s quadrants removed due to missing surfaces", nrow(excluded_ids), nrow(excluded_quads)))

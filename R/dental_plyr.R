@@ -89,7 +89,7 @@ dental_join <- function(data, by = tooth, notation = c("FDI", "standards", "text
       dplyr::left_join(tooth_notation, ...)
   } else {
     data %>%
-      dplyr::mutate(across({{ by }}, \(x) stringr::str_extract(x, "\\d+"))) %>%
+      dplyr::mutate(dplyr::across({{ by }}, \(x) stringr::str_extract(x, "\\d+"))) %>%
       dplyr::left_join(tooth_notation, ...) # need to be able to use the 'by' argument here
   }
 }
