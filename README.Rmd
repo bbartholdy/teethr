@@ -36,7 +36,9 @@ You can install the development version of teethr like so:
 devtools::install_github("bbartholdy/teethr")
 ```
 
-## Example
+## Examples
+
+### Tidy dental data
 
 First, dental data are combined with demographic data and converted to long format with
 `dental_longer()`. `dental_longer()` also adds information on tooth type and
@@ -56,10 +58,21 @@ mb11_calculus_long
 ```{r example-out, echo=FALSE}
 mb11_calculus_long <- mb11_calculus %>% 
   dental_longer(-id, names_sep = "_") %>% # make longer all columns except 'id'
+  dental_join() %>%
   inner_join(mb11_demography, by = "id") # combine with age and sex
 mb11_calculus_long
 ```
 
+If you need to switch between tooth notations, you can use `dental_recode()`.
+Currently available notations are FDI, Standards, and text.
+
+```{r}
+mb11_calculus_long %>%
+  dental_recode(col = tooth, from = "FDI", to = "text") %>%
+  select(id, tooth)
+```
+
+### Dental calculations
 
 The long-format data can be used to calculate indices, such as the dental calculus
 index using the `calculus_index()` function. The function also provides the number
@@ -90,40 +103,45 @@ mb11_calculus_long %>%
   select(sex, quadrant, index) # remove unnecessary outputs
 ```
 
-
-```{r calc-plot}
-library(ggplot2)
-mb11_calculus_long %>% 
-  calculus_index(id, age, quadrant) %>% 
-  #filter(quadrant == "UP") %>% 
-  ggplot(aes(x = age, y = index, fill = age)) +
-    #geom_violin(aes(fill = sex)) +
-    geom_boxplot(width = 0.5) +
-    scale_fill_viridis_d() +
-    facet_wrap(~ quadrant) +
-    theme_bw()
-```
-
-Dental caries ratios can be calculated using the `caries_ratio` function.
+Dental caries ratios can be calculated using the `count_caries()` and `dental_ratio()` functions.
 
 ```{r caries-ratio}
 mb11_caries_long <- mb11_caries %>% 
   dental_longer(-id) %>%
   dental_join()
 
-mb11_caries_long %>% 
+caries_ratios <- mb11_caries_long %>% 
   count_caries(caries = score, no_lesion = "none") %>% # convert location to lesion count
-  group_by(type) %>% 
+  group_by(tooth) %>% 
   dental_ratio(count = caries_count)
+caries_ratios
 ```
 
+### Dental plotting
 
-The package also facilitates working with the {tidyverse}.
+A plot can be created for dental calculus indices per quadrant
 
-```{r}
-# count number of teeth per individual
-mb11_caries_long %>% 
-  remove_missing(vars = "score") %>% 
-  count(id)
+```{r calc-plot}
+library(ggplot2)
+mb11_calculus_long %>% 
+  calculus_index(id, age, quadrant) %>% 
+  ggplot(aes(x = age, y = index)) +
+    geom_violin(aes(fill = age)) +
+    geom_boxplot(width = 0.2) +
+    scale_fill_viridis_d() +
+    facet_wrap(~ quadrant) +
+    theme_bw()
 ```
 
+And the built-in `dental_arcade_mapping` data frame can be used to map teeth to `geom_sf()`
+and create fun plots like this one:
+
+```{r dental-map}
+library(sf)
+caries_ratios %>%
+  dental_recode(tooth, "FDI", "text") %>% # notation needs to be text
+  left_join(as_tibble(dental_arcade_mapping), by = "tooth") %>%
+  ggplot(aes(fill = ratio, geometry = geometry)) +
+    geom_sf() +
+    theme_void()
+```
