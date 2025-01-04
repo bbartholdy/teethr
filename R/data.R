@@ -70,3 +70,16 @@
 #' }
 #' @source Buikstra, J. E., & Ubelaker, D. H. (1994). Standards for data collection from human skeletal remains. Arkansas Archaeological Survey Research Series No. 44. Fayetteville: Arkansas Archaeological Survey.
 "tooth_notation"
+
+#' Dental arcade mapping data
+#'
+#' Used to map each tooth to geom_sf() to create a dental plot.
+#' @format ## `dental_arcade_mapping`
+#' A data frame with 32 rows and 2 columns:
+#' \describe{
+#'   \item{tooth}{string. Tooth with text notation.}
+#'   \item{geometry}{sfc. Simple feature geometry list-column for mapping teeth to geom_sf().}
+#'   ...
+#' }
+#' @source https://github.com/ZandraFagernas/dental_arcade/blob/v0.1/dental_arcade_empty_mapping.jpg
+"dental_arcade_mapping"
